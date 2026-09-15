@@ -10,8 +10,8 @@
     ],
     "require": {
         "php": "^8.4",
-        "kinetis/framework": "dev-main",
-        "kinetis/search": "dev-main",
+        "kinetis/framework": "^1.11.2",
+        "kinetis/search": "^1.0.2",
         "elastic/transport": "^8.11 || ^9.0",
         "elasticsearch/elasticsearch": "^8.19 || ^9.0",
         "psr/container": "^2.0.2",
@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "infection/infection": "^0.35.0",
-        "kinetis/revolt-http-client": "dev-main",
+        "kinetis/revolt-http-client": "^1.4.1",
         "phpstan/phpstan": "^2.2.8",
         "phpunit/phpunit": "^13.3.3",
         "vimeo/psalm": "^6.17"
@@ -39,20 +39,6 @@
             "bootstrap": "Kinetis\\SearchElasticsearch\\PackageBootstrap"
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../revolt-http-client"
-        },
-        {
-            "type": "path",
-            "url": "../framework"
-        },
-        {
-            "type": "path",
-            "url": "../search"
-        }
-    ],
     "config": {
         "sort-packages": true,
         "allow-plugins": {
