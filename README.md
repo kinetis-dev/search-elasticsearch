@@ -84,7 +84,7 @@ the client is built: they are two credentials for one request.
 
 Every key is scoped — `SEARCH_ELASTICSEARCH_HOST` + `logs` →
 `SEARCH_LOGS_ELASTICSEARCH_HOST`. Full reference:
-[kinetis.dev/docs/search.html](https://kinetis.dev/docs/search.html).
+[kinetis.dev/docs/search-engines.html](https://kinetis.dev/docs/search-engines.html).
 
 ## Matching the client to your cluster
 
