@@ -9,6 +9,7 @@ use Kinetis\Search\BufferedHttpClient;
 use Kinetis\Search\BulkOperation;
 use Kinetis\Search\Exception\SearchNetworkException;
 use Kinetis\Search\Exception\SearchRequestException;
+use Kinetis\Search\WriteCondition;
 use Kinetis\Config\Config;
 use Kinetis\SearchElasticsearch\ElasticsearchClient;
 use Kinetis\SearchElasticsearch\ElasticsearchClientFactory;
@@ -120,6 +121,48 @@ final class ElasticsearchClientTest extends TestCase
                 . '{"update":{"_index":"articles","_id":"2"}}' . "\n"
                 . '{"doc":{"title":"Renamed"}}' . "\n"
                 . '{"delete":{"_index":"articles","_id":"3"}}' . "\n",
+            $this->sent[0]['body'],
+        );
+    }
+
+    /**
+     * A condition travels as the query parameters this engine's client
+     * whitelists for these two endpoints, so what fences the write is on
+     * the wire rather than in this package's own bookkeeping.
+     */
+    public function test_a_write_condition_reaches_the_wire_as_query_parameters(): void
+    {
+        $this->clientAnswering(['result' => 'updated'])
+            ->index('articles', '1', ['n' => 1], condition: WriteCondition::external(7));
+
+        self::assertSame(
+            'https://localhost:9200/articles/_doc/1?version=7&version_type=external',
+            $this->sent[0]['url'],
+        );
+
+        $this->sent = [];
+        $this->clientAnswering(['result' => 'deleted'])
+            ->delete('articles', '1', condition: WriteCondition::ifUnchanged(4, 2));
+
+        self::assertSame(
+            'https://localhost:9200/articles/_doc/1?if_seq_no=4&if_primary_term=2',
+            $this->sent[0]['url'],
+        );
+    }
+
+    public function test_a_bulk_condition_reaches_the_wire_in_its_own_action_line(): void
+    {
+        $client = $this->clientAnswering(['took' => 1, 'errors' => false, 'items' => []]);
+
+        $client->bulk([
+            BulkOperation::index('articles', '1', ['title' => 'Kinetis'], WriteCondition::external(7)),
+            BulkOperation::delete('articles', '2', WriteCondition::ifUnchanged(4, 2)),
+        ]);
+
+        self::assertSame(
+            '{"index":{"_index":"articles","_id":"1","version":7,"version_type":"external"}}' . "\n"
+                . '{"title":"Kinetis"}' . "\n"
+                . '{"delete":{"_index":"articles","_id":"2","if_seq_no":4,"if_primary_term":2}}' . "\n",
             $this->sent[0]['body'],
         );
     }

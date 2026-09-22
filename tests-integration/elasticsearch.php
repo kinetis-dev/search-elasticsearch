@@ -9,6 +9,8 @@ use Elastic\Transport\Exception\NoNodeAvailableException;
 use Kinetis\Config\Config;
 use Kinetis\Search\BulkOperation;
 use Kinetis\Search\Exception\SearchNetworkException;
+use Kinetis\Search\Exception\SearchRequestException;
+use Kinetis\Search\WriteCondition;
 use Kinetis\SearchElasticsearch\ElasticsearchClient;
 use Kinetis\SearchElasticsearch\ElasticsearchClientFactory;
 
@@ -102,6 +104,82 @@ check('a rejected bulk operation carries its own status', ($conflicted['items'][
 
 check('SearchClient::delete() answers true for a document it removed', $search->delete($neutralIndex, 'b', refresh: true));
 check('SearchClient::delete() answers false for one that was not there', !$search->delete($neutralIndex, 'b'));
+
+// Conditional writes against the real engine: the fence an at-least-once
+// projection needs, and the conflict vocabulary a stale delivery meets.
+// Nothing here retries — a refused write is the answer.
+$search->index($neutralIndex, 'fenced', ['revision' => 7], refresh: true, condition: WriteCondition::external(7));
+
+$duplicate = $search->index(
+    $neutralIndex,
+    'fenced',
+    ['revision' => 7],
+    refresh: true,
+    condition: WriteCondition::externalOrEqual(7),
+);
+check(
+    'externalOrEqual() accepts a duplicate delivery of the version already stored',
+    ($duplicate['_version'] ?? 0) === 7,
+);
+
+try {
+    $search->index($neutralIndex, 'fenced', ['revision' => 6], condition: WriteCondition::external(6));
+    check('external() refuses a delivery older than the stored version', false);
+} catch (SearchRequestException $e) {
+    check('external() refuses a delivery older than the stored version', $e->status === 409);
+}
+check(
+    'the refused delivery left the newer revision in place',
+    ($search->get($neutralIndex, 'fenced')['_source']['revision'] ?? 0) === 7,
+);
+
+$staleBulk = $search->bulk(
+    [BulkOperation::index($neutralIndex, 'fenced', ['revision' => 5], WriteCondition::external(5))],
+    refresh: true,
+);
+check(
+    'a stale bulk item is reported as its own 409 inside a 200',
+    $staleBulk['errors'] === true && ($staleBulk['items'][0]['index']['status'] ?? 0) === 409,
+);
+
+// ifUnchanged() fences a read-modify-write instead: the _seq_no and
+// _primary_term get() answered stop being current the moment anything
+// else writes.
+$search->index($neutralIndex, 'raced', ['category' => 'first'], refresh: true);
+$held = $search->get($neutralIndex, 'raced');
+$search->index($neutralIndex, 'raced', ['category' => 'second'], refresh: true);
+
+try {
+    $search->index(
+        $neutralIndex,
+        'raced',
+        ['category' => 'third'],
+        refresh: true,
+        condition: WriteCondition::ifUnchanged($held['_seq_no'], $held['_primary_term']),
+    );
+    check('ifUnchanged() refuses a write over a document that moved', false);
+} catch (SearchRequestException $e) {
+    check('ifUnchanged() refuses a write over a document that moved', $e->status === 409);
+}
+check(
+    'the document the refused write targeted still holds what the other writer left',
+    ($search->get($neutralIndex, 'raced')['_source']['category'] ?? '') === 'second',
+);
+
+// A conditional delete takes the same fence, and the stored version is
+// its boundary: below it the document survives, above it the delete
+// applies.
+try {
+    $search->delete($neutralIndex, 'fenced', refresh: true, condition: WriteCondition::external(6));
+    check('a conditional delete below the stored version is refused', false);
+} catch (SearchRequestException $e) {
+    check('a conditional delete below the stored version is refused', $e->status === 409);
+}
+check('the document survived the refused delete', $search->get($neutralIndex, 'fenced') !== null);
+check(
+    'a conditional delete above the stored version applies',
+    $search->delete($neutralIndex, 'fenced', refresh: true, condition: WriteCondition::external(8)),
+);
 
 $client->indices()->delete(['index' => $index]);
 $client->indices()->delete(['index' => $neutralIndex]);
