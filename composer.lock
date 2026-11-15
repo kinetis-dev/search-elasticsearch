@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea4dddc8af7b8dbd26c88885e797c9be",
+    "content-hash": "db92aa52fab43427ccb6bf8fee36b1cc",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1324,10 +1324,11 @@
             "dist": {
                 "type": "path",
                 "url": "../revolt-http-client",
-                "reference": "2a6dd6ab661d234132fa2969c9ebb7cc75014fd9"
+                "reference": "f4ed62a90a5b1df58aaf6ae499226283bdbcad26"
             },
             "require": {
                 "amphp/http-client": "^5.3.6",
+                "ext-zlib": "*",
                 "php": "^8.4",
                 "revolt/event-loop": "^1.0.9",
                 "symfony/http-client": "^8.1.11",
@@ -4718,6 +4719,99 @@
                 "source": "https://github.com/cweiske/jsonmapper/tree/v5.0.1"
             },
             "time": "2026-02-22T16:28:03+00:00"
+        },
+        {
+            "name": "neuron-core/neuron-ai",
+            "version": "4.1.25",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/neuron-core/neuron-ai.git",
+                "reference": "b9611f6d25204f30beee983d0965f847bec5e393"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/neuron-core/neuron-ai/zipball/b9611f6d25204f30beee983d0965f847bec5e393",
+                "reference": "b9611f6d25204f30beee983d0965f847bec5e393",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": "^8.1",
+                "psr/event-dispatcher": "^1.0"
+            },
+            "require-dev": {
+                "amphp/amp": "^3.1.1",
+                "amphp/http-client": "^5.3",
+                "aws/aws-sdk-php": "^3.209",
+                "elasticsearch/elasticsearch": "^8.19|^9.0",
+                "ext-bcmath": "*",
+                "ext-igbinary": "*",
+                "ext-mongodb": "*",
+                "ext-pdo": "*",
+                "ext-pdo_pgsql": "*",
+                "ext-redis": "*",
+                "ext-sodium": "*",
+                "friendsofphp/php-cs-fixer": "^3.75",
+                "google/auth": "^1.49",
+                "guzzlehttp/guzzle": "^7.0|^8.0",
+                "html2text/html2text": "^4.3",
+                "illuminate/database": "^10.21|^11.0|^12.0",
+                "laudis/neo4j-php-client": "^3.4",
+                "mongodb/mongodb": "^2.3",
+                "opensearch-project/opensearch-php": "^2.5",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^10.0",
+                "psr/http-message": "^1.0|^2.0",
+                "psr/log": "^1.0|^2.0|^3.0",
+                "pusher/pusher-php-server": "^7.2.4",
+                "rector/rector": "^2.0",
+                "spatie/fork": "^1.2",
+                "symfony/mercure": "^0.7|^0.8",
+                "tomasvotruba/type-coverage": "^2.0",
+                "typesense/typesense-php": "^5.0.2",
+                "vlucas/phpdotenv": "^5.6"
+            },
+            "suggest": {
+                "ext-bcmath": "Exact integer tools in the Calculator toolkit (factorial, combinations, gcd, mod_pow, primes).",
+                "ext-igbinary": "Smaller/faster durable-step serialization via IgbinarySerializer.",
+                "ext-redis": "Redis workflow persistence via RedisPersistence and Pub/Sub streaming via RedisChannel and RedisChannelReader.",
+                "ext-sodium": "End-to-end encryption for Pusher streaming channels.",
+                "psr/log": "Logging observability events through LogListener.",
+                "pusher/pusher-php-server": "Pusher-compatible streaming channels, including encrypted channels (requires >=7.2.4 for HTTP timeout propagation).",
+                "spatie/fork": "Parallel evaluation runs via the --concurrency option (requires ext-pcntl and ext-posix).",
+                "symfony/mercure": "Mercure streaming channel (^0.8 for hubs speaking Mercure protocol 1.0)."
+            },
+            "bin": [
+                "bin/neuron"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NeuronAI\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Valerio Barbera",
+                    "email": "valerio@inspector.dev"
+                }
+            ],
+            "description": "A unified layer for building AI-native applications in PHP.",
+            "support": {
+                "issues": "https://github.com/neuron-core/neuron-ai/issues",
+                "source": "https://github.com/neuron-core/neuron-ai/tree/frontend-v0.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/neuron-core",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-11-14T17:59:28+00:00"
         },
         {
             "name": "nikic/php-parser",
