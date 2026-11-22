@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": ">=8.4 <8.6",
         "kinetis/framework": "dev-main",
         "kinetis/search": "dev-main",
         "elastic/transport": "^8.11 || ^9.0",

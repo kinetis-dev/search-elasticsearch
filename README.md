@@ -104,7 +104,7 @@ composer require elasticsearch/elasticsearch:^8.19
 composer require kinetis/search-elasticsearch
 ```
 
-Requires PHP 8.4+, [`kinetis/framework`](https://github.com/kinetis-dev/framework),
+Requires PHP 8.4 or 8.5, [`kinetis/framework`](https://github.com/kinetis-dev/framework),
 and [`kinetis/search`](https://github.com/kinetis-dev/search).
 Full documentation:
 [kinetis.dev/docs/search-elasticsearch.html](https://kinetis.dev/docs/search-elasticsearch.html).
