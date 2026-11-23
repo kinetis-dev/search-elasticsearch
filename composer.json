@@ -20,7 +20,7 @@
     "require-dev": {
         "infection/infection": "^0.35.0",
         "kinetis/revolt-http-client": "dev-main",
-        "neuron-core/neuron-ai": "^4.1.27",
+        "neuron-core/neuron-ai": "^4.1.28",
         "phpstan/phpstan": "^2.2.8",
         "phpunit/phpunit": "^13.3.3",
         "vimeo/psalm": "^7.0"
